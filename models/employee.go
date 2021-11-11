@@ -1,7 +1,8 @@
 package models
 
+// Employee detail
 type Employee struct {
-	id    int    `json:"id"`
-	name  string `json:"name"`
-	phone string `json:"phone"`
+	ID    int64  `json:"id"`
+	Name  string `json:"name"`
+	Phone string `json:"phone"`
 }
