@@ -89,7 +89,7 @@ func (m *empRepo) Create(ctx context.Context, p *models.Employee) (int64, error)
 }
 
 // Update Employee
-func (m *empRepo) Update(ctx context.Context, p *models.Employee) (*models.Employee, error) {
+func (m *empRepo) Update(ctx context.Context, p *models.Employee, id int64) (*models.Employee, error) {
 	query := "UPDATE employee set name=?, phone=? where id=?"
 
 	stmt, err := m.Conn.PrepareContext(ctx, query)
@@ -100,7 +100,7 @@ func (m *empRepo) Update(ctx context.Context, p *models.Employee) (*models.Emplo
 		ctx,
 		p.Name,
 		p.Phone,
-		p.ID,
+		id,
 	)
 	if err != nil {
 		return nil, err
@@ -111,16 +111,16 @@ func (m *empRepo) Update(ctx context.Context, p *models.Employee) (*models.Emplo
 }
 
 // Delete Employee
-func (m *empRepo) Delete(ctx context.Context, id int64) (sql.Result, error) {
+func (m *empRepo) Delete(ctx context.Context, id int64) (int64, error) {
 	query := "DELETE FROM employee WHERE id=?"
 
 	stmt, err := m.Conn.PrepareContext(ctx, query)
 	if err != nil {
-		return nil, err
+		return 0, err
 	}
-	deleted, err := stmt.ExecContext(ctx, id)
+	res, err := stmt.ExecContext(ctx, id)
 	if err != nil {
-		return nil, err
+		return 0, err
 	}
-	return deleted, nil
+	return res.RowsAffected()
 }
