@@ -2,26 +2,25 @@ package employee
 
 import (
 	"context"
-	"database/sql"
-	"errors"
-
 	models "crud/models"
 	repo "crud/service"
+	"database/sql"
+	"errors"
 )
 
-// NewSQLEmpRepo retunrs implement of employee repository interface
-func NewSQLEmpRepo(Conn *sql.DB) repo.EmpRepo {
-	return &mysqlEmpRepo{
+type empRepo struct {
+	Conn *sql.DB
+}
+
+// NewEmpRepo retunrs implement of employee repository interface
+func NewEmpRepo(Conn *sql.DB) repo.EmpRepo {
+	return &empRepo{
 		Conn: Conn,
 	}
 }
 
-type mysqlEmpRepo struct {
-	Conn *sql.DB
-}
-
 // define fetch method
-func (m *mysqlEmpRepo) fetch(ctx context.Context, query string, args ...interface{}) ([]*models.Employee, error) {
+func (m *empRepo) fetch(ctx context.Context, query string, args ...interface{}) ([]*models.Employee, error) {
 	rows, err := m.Conn.QueryContext(ctx, query, args...)
 	if err != nil {
 		return nil, err
@@ -45,14 +44,14 @@ func (m *mysqlEmpRepo) fetch(ctx context.Context, query string, args ...interfac
 }
 
 // Get employees list
-func (m *mysqlEmpRepo) Fetch(ctx context.Context) ([]*models.Employee, error) {
+func (m *empRepo) Fetch(ctx context.Context) ([]*models.Employee, error) {
 	query := "Select id, name, phone From employee"
 
 	return m.fetch(ctx, query)
 }
 
 // Get employee by id
-func (m *mysqlEmpRepo) GetByID(ctx context.Context, id int) (*models.Employee, error) {
+func (m *empRepo) GetByID(ctx context.Context, id int64) (*models.Employee, error) {
 	query := "Select id, name, phone From employee where id=?"
 
 	rows, err := m.fetch(ctx, query, id)
@@ -71,7 +70,7 @@ func (m *mysqlEmpRepo) GetByID(ctx context.Context, id int) (*models.Employee, e
 }
 
 // Create new Employee
-func (m *mysqlEmpRepo) Create(ctx context.Context, p *models.Employee) (int64, error) {
+func (m *empRepo) Create(ctx context.Context, p *models.Employee) (int64, error) {
 	query := "INSERT INTO employee (name,phone) VALUES(?,?) "
 
 	stmt, err := m.Conn.PrepareContext(ctx, query)
@@ -90,7 +89,7 @@ func (m *mysqlEmpRepo) Create(ctx context.Context, p *models.Employee) (int64, e
 }
 
 // Update Employee
-func (m *mysqlEmpRepo) Update(ctx context.Context, p *models.Employee) (*models.Employee, error) {
+func (m *empRepo) Update(ctx context.Context, p *models.Employee) (*models.Employee, error) {
 	query := "UPDATE employee set name=?, phone=? where id=?"
 
 	stmt, err := m.Conn.PrepareContext(ctx, query)
@@ -112,7 +111,7 @@ func (m *mysqlEmpRepo) Update(ctx context.Context, p *models.Employee) (*models.
 }
 
 // Delete Employee
-func (m *mysqlEmpRepo) Delete(ctx context.Context, id int) (sql.Result, error) {
+func (m *empRepo) Delete(ctx context.Context, id int64) (sql.Result, error) {
 	query := "DELETE FROM employee WHERE id=?"
 
 	stmt, err := m.Conn.PrepareContext(ctx, query)
