@@ -2,17 +2,22 @@ package controller
 
 import (
 	"crud/dbconfig"
-	"crud/models"
+	repo "crud/service"
 	"crud/service/employee"
 	"encoding/json"
 	"net/http"
 )
 
 // new employee handlerr ...
-func newEmployeeHandler(db *dbconfig.DB) *models.Employee {
-	return &models.Employee{
-		repo: employee.NewSQLEmpRepo(db.SQL),
+func newEmployeeHandler(db *dbconfig.DB) *Employee {
+	return &Employee{
+		repo: employee.NewEmpRepo(db.SQL),
 	}
+}
+
+// Employee ...
+type Employee struct {
+	repo repo.EmpRepo
 }
 
 // respondwithJSON write json response format
