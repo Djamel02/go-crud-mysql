@@ -1,4 +1,4 @@
-package routes
+package routehandler
 
 import (
 	"crud/controller"
