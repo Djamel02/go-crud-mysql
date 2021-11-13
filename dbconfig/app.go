@@ -7,13 +7,13 @@ import (
 	_ "github.com/go-sql-driver/mysql"
 )
 
-var user string = "root"
-var pass string = "1234"
-var host string = "127.0.0.1"
-var port string = "3306"
-var database = "testdb"
+var user string = GetEnvironmentVars("DBUSER")
+var pass string = GetEnvironmentVars("DBPASS")
+var host string = GetEnvironmentVars("DBHOST")
+var port string = GetEnvironmentVars("DBPORT")
+var database string = GetEnvironmentVars("DBNAME")
 
-// DB ...
+// DB
 type DB struct {
 	SQL *sql.DB
 }

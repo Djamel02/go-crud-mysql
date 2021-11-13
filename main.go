@@ -2,7 +2,7 @@ package main
 
 import (
 	"crud/dbconfig"
-	"crud/routes"
+	"crud/routehandler"
 	"fmt"
 	"log"
 	"net/http"
@@ -58,8 +58,7 @@ func main() {
 	if err != nil {
 		panic(err)
 	}
-	routes.HandleEmpRoutes(a, db)
-	fmt.Println("Under routes")
-	log.Fatal(http.ListenAndServe(":3000", CORS(a)), "Server listenening")
+	routehandler.HandleEmpRoutes(a, db)
+	log.Fatal(http.ListenAndServe(fmt.Sprintf(":%s", dbconfig.GetEnvironmentVars("PORT")), CORS(a)))
 
 }
