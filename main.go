@@ -53,12 +53,12 @@ func CORS(next http.Handler) http.Handler {
 }
 
 func main() {
-	a := mux.NewRouter()
+	router := mux.NewRouter()
 	db, err := dbconfig.Connect()
 	if err != nil {
 		panic(err)
 	}
-	routehandler.HandleEmpRoutes(a, db)
-	log.Fatal(http.ListenAndServe(fmt.Sprintf(":%s", dbconfig.GetEnvironmentVars("PORT")), CORS(a)))
+	routehandler.HandleEmpRoutes(router, db)
+	log.Fatal(http.ListenAndServe(fmt.Sprintf(":%s", dbconfig.GetEnvironmentVars("PORT")), CORS(router)))
 
 }
