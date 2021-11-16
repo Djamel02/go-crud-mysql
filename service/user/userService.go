@@ -4,6 +4,7 @@ import (
 	"context"
 	"crud/models"
 	repo "crud/service"
+	tokenUtils "crud/utils"
 	"database/sql"
 
 	"golang.org/x/crypto/bcrypt"
@@ -37,7 +38,7 @@ func (m *userRepo) Register(ctx context.Context, u *models.User) (int64, error) 
 	return res.RowsAffected()
 }
 
-func (m *userRepo) Login(ctx context.Context, username string, password string) (*models.User, error) {
+func (m *userRepo) Login(ctx context.Context, username string, password string) (*string, error) {
 	// Find record by username
 	query := `SELECT * FROM user WHERE username = ? `
 	row, err := m.Conn.QueryContext(ctx, query, username)
@@ -57,10 +58,14 @@ func (m *userRepo) Login(ctx context.Context, username string, password string) 
 			return nil, err
 		}
 	}
-	println(user)
+
 	if err := bcrypt.CompareHashAndPassword([]byte(user.Password), []byte(password)); err != nil {
 		return nil, err
 	}
-
-	return user, nil
+	// Get token
+	token, err := tokenUtils.GenerateToken(int(user.ID))
+	if err != nil {
+		return nil, err
+	}
+	return token, nil
 }

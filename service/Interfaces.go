@@ -16,6 +16,6 @@ type EmpRepo interface {
 
 // UserRepository
 type UserRepo interface {
-	Login(ctx context.Context, username string, password string) (*models.User, error)
+	Login(ctx context.Context, username string, password string) (*string, error)
 	Register(ctx context.Context, u *models.User) (int64, error)
 }
