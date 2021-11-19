@@ -2,7 +2,7 @@ package employee
 
 import (
 	"context"
-	models "crud/models"
+	"crud/models"
 	repo "crud/service"
 	"database/sql"
 	"errors"

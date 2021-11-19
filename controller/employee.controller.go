@@ -22,19 +22,7 @@ func NewEmployeeHandler(db *dbconfig.DB) *Employee {
 	}
 }
 
-// respondwithJSON write json response format
-func respondwithJSON(w http.ResponseWriter, code int, payload interface{}) {
-	response, _ := json.Marshal(payload)
-
-	w.Header().Set("Content-Type", "application/json")
-	w.WriteHeader(code)
-	w.Write(response)
-}
-
-// respondwithError return error message
-func respondWithError(w http.ResponseWriter, code int, msg string) {
-	respondwithJSON(w, code, map[string]string{"message": msg})
-}
+// var views = tmp.Must(tmp.ParseGlob("views/*"))
 
 // Get employees list
 func (e *Employee) GetEmployeesList(w http.ResponseWriter, r *http.Request) {
@@ -46,6 +34,7 @@ func (e *Employee) GetEmployeesList(w http.ResponseWriter, r *http.Request) {
 	}
 	// On succes
 	respondwithJSON(w, 200, res)
+	// views.ExecuteTemplate(w, "index", res)
 }
 
 // Get employee by id
@@ -65,6 +54,7 @@ func (e *Employee) GetEmployeeById(w http.ResponseWriter, r *http.Request) {
 	}
 	// On succes
 	respondwithJSON(w, 200, res)
+	// views.ExecuteTemplate(w, "index", res)
 }
 
 // Create Employee
