@@ -25,13 +25,19 @@ func (m *userRepo) Register(ctx context.Context, u *models.User) (int64, error) 
 	hashedPass, _ := bcrypt.GenerateFromPassword([]byte(u.Password), 10)
 	// Convert byte to string
 	newhashed := string(hashedPass[:])
-	query := `INSERT INTO user (username, email, password) VALUES(?,?,?)`
+	query := `INSERT INTO [dbo].[users]
+	([username]
+	,[email]
+	,[password])
+VALUES (?,?,?)`
+
 	stmt, err := m.Conn.PrepareContext(ctx, query)
 	if err != nil {
 		return -1, err
 	}
 	res, err := stmt.ExecContext(ctx, u.Username, u.Email, newhashed)
 	if err != nil {
+		println(err.Error())
 		return -1, err
 	}
 
@@ -40,7 +46,7 @@ func (m *userRepo) Register(ctx context.Context, u *models.User) (int64, error) 
 
 func (m *userRepo) Login(ctx context.Context, username string, password string) (*string, error) {
 	// Find record by username
-	query := `SELECT * FROM user WHERE username = ? `
+	query := `SELECT * FROM [dbo].[users] WHERE username = ? `
 	row, err := m.Conn.QueryContext(ctx, query, username)
 	if err != nil {
 		return nil, err
@@ -68,4 +74,32 @@ func (m *userRepo) Login(ctx context.Context, username string, password string) 
 		return nil, err
 	}
 	return token, nil
+}
+
+// Get all users
+func (m *userRepo) Fetch(ctx context.Context) ([]*models.User, error) {
+	query := `SELECT * FROM [dbo].[users]`
+	rows, err := m.Conn.Query(query)
+	if err != nil {
+		println(err.Error())
+		return nil, err
+	}
+	defer rows.Close()
+	users := make([]*models.User, 0)
+	for rows.Next() {
+		data := new(models.User)
+		err := rows.Scan(
+			&data.ID,
+			&data.Username,
+			&data.Email,
+			&data.Password,
+			&data.CreatedAt,
+		)
+		if err != nil {
+			println("97" + err.Error())
+			return nil, err
+		}
+		users = append(users, data)
+	}
+	return users, nil
 }
