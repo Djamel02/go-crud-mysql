@@ -34,6 +34,12 @@ func (m *empRepo) fetch(ctx context.Context, query string, args ...interface{}) 
 			&data.ID,
 			&data.Name,
 			&data.Phone,
+			&data.Picture,
+			&data.Job,
+			&data.Country,
+			&data.City,
+			&data.Postalcode,
+			&data.CreatedAt,
 		)
 		if err != nil {
 			return nil, err
@@ -45,14 +51,33 @@ func (m *empRepo) fetch(ctx context.Context, query string, args ...interface{}) 
 
 // Get employees list
 func (m *empRepo) Fetch(ctx context.Context) ([]*models.Employee, error) {
-	query := "Select id, name, phone From employee"
+	query := `Select [id] 
+			,[name]
+			,[phone]
+			,[picture]
+			,[job] 
+			,[country]
+			,[city]
+			,[postalcode]
+			,[created_at]
+			 From [dbo].[employees]`
 
 	return m.fetch(ctx, query)
 }
 
 // Get employee by id
 func (m *empRepo) GetByID(ctx context.Context, id int64) (*models.Employee, error) {
-	query := "Select id, name, phone From employee where id=?"
+	query := `Select
+			[id] 
+			,[name]
+			,[phone]
+			,[picture]
+			,[job] 
+			,[country]
+			,[city]
+			,[postalcode]
+			,[created_at]
+			From [dbo].[employees] where [id]=?`
 
 	rows, err := m.fetch(ctx, query, id)
 	if err != nil {
@@ -71,16 +96,20 @@ func (m *empRepo) GetByID(ctx context.Context, id int64) (*models.Employee, erro
 
 // Create new Employee
 func (m *empRepo) Create(ctx context.Context, p *models.Employee) (int64, error) {
-	query := "INSERT INTO employee (name,phone) VALUES(?,?) "
-
+	query := `INSERT INTO [dbo].[employees]
+		([name]
+		,[phone]
+		,[picture]
+		,[job]
+		,[country]
+		,[city]
+		,[postalcode])
+	VALUES (?,?,?,?,?,?,?)`
 	stmt, err := m.Conn.PrepareContext(ctx, query)
 	if err != nil {
 		return -1, err
 	}
-
-	res, err := stmt.ExecContext(ctx, p.Name, p.Phone)
-	defer stmt.Close()
-
+	res, err := stmt.ExecContext(ctx, p.Name, p.Phone, p.Picture, p.Job, p.Country, p.City, p.Postalcode)
 	if err != nil {
 		return -1, err
 	}
@@ -90,7 +119,7 @@ func (m *empRepo) Create(ctx context.Context, p *models.Employee) (int64, error)
 
 // Update Employee
 func (m *empRepo) Update(ctx context.Context, p *models.Employee, id int64) (*models.Employee, error) {
-	query := "UPDATE employee set name=?, phone=? where id=?"
+	query := "UPDATE [dbo].[employees] set [name]=?, [phone]=?,[job] =? ,[country] =?,[city] =? ,[postalcode]=?  where [id]=?"
 
 	stmt, err := m.Conn.PrepareContext(ctx, query)
 	if err != nil {
@@ -100,6 +129,10 @@ func (m *empRepo) Update(ctx context.Context, p *models.Employee, id int64) (*mo
 		ctx,
 		p.Name,
 		p.Phone,
+		p.Job,
+		p.Country,
+		p.City,
+		p.Postalcode,
 		id,
 	)
 	if err != nil {
@@ -112,7 +145,7 @@ func (m *empRepo) Update(ctx context.Context, p *models.Employee, id int64) (*mo
 
 // Delete Employee
 func (m *empRepo) Delete(ctx context.Context, id int64) (int64, error) {
-	query := "DELETE FROM employee WHERE id=?"
+	query := "DELETE FROM [employees] WHERE [id]=?"
 
 	stmt, err := m.Conn.PrepareContext(ctx, query)
 	if err != nil {
