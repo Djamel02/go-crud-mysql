@@ -11,3 +11,9 @@ Simple RESTFull API for learning purposes, using Golang and MySql as Database wi
 - Viper v1.9.0 [github.com/spf13/viper](https://github.com/spf13/viper)
 - Jwt Go v3.2.0 [github.com/dgrijalva/jwt-go](https://github.com/dgrijalva/jwt-go)
 - Go crypro [golang.org/x/crypto](https://golang.org/x/crypto)
+
+## Swagger
+
+### Screenshots
+
+![CRUD swagger documentation](./Screenshots/Swagger.png)
