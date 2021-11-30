@@ -14,7 +14,7 @@ Simple RESTFull API for learning purposes, using Golang and MySql as Database wi
 - Gorilla MUX v1.8.0 [github.com/gorilla/mux](https://github.com/gorilla/mux)
 - MySql Driver v1.6.0 [github.com/go-sql-driver/mysql](https://github.com/go-sql-driver/mysql)
 - Viper v1.9.0 [github.com/spf13/viper](https://github.com/spf13/viper)
-- Jwt Go v3.2.0 [github.com/dgrijalva/jwt-go](https://github.com/dgrijalva/jwt-go)
+- Jwt Go v3.2.2 [github.com/golang-jwt/jwt](https://github.com/golang-jwt/jwt)
 - Go crypro [golang.org/x/crypto](https://golang.org/x/crypto)
 
 ## Swagger
