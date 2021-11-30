@@ -2,7 +2,12 @@
 
 ## Description
 
-Simple RESTFull API for learning purposes, using Golang and MySql as Database with MVC
+Simple RESTFull API for learning purposes, using Golang and MySql as Database with MVC <br/>
+
+## Resources
+
+[Github repo to build RESTFull APIs with go](https://github.com/err-him/go-book-store-api) <br/>
+[Medium article about go-swagger](https://medium.com/@pedram.esmaeeli/generate-swagger-specification-from-go-source-code-648615f7b9d9)
 
 ## Dependecies
 
