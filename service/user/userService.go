@@ -4,7 +4,7 @@ import (
 	"context"
 	"crud/models"
 	repo "crud/service"
-	tokenUtils "crud/utils"
+	token "crud/utils"
 	"database/sql"
 
 	"golang.org/x/crypto/bcrypt"
@@ -69,7 +69,7 @@ func (m *userRepo) Login(ctx context.Context, username string, password string) 
 		return nil, err
 	}
 	// Get token
-	token, err := tokenUtils.GenerateToken(int(user.ID))
+	token, err := token.GenerateToken(int(user.ID))
 	if err != nil {
 		return nil, err
 	}
