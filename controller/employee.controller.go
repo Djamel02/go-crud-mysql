@@ -27,6 +27,13 @@ func NewEmployeeHandler(db *dbconfig.DB) *Employee {
 
 // var views = tmp.Must(tmp.ParseGlob("views/*"))
 
+// swagger:route GET /employee Employees getEmployees
+// Get employees list
+// responses:
+//   200: jsonResponse
+//
+// swagger:response jsonResponse
+
 // Get employees list
 func (e *Employee) GetEmployeesList(w http.ResponseWriter, r *http.Request) {
 	res, err := e.repo.Fetch(r.Context())
@@ -39,6 +46,14 @@ func (e *Employee) GetEmployeesList(w http.ResponseWriter, r *http.Request) {
 	// views.ExecuteTemplate(w, "index", res)
 }
 
+
+// swagger:route GET /employee/{id} Employees getEmployeeById
+// Get employees by id
+// responses:
+//   200: jsonResponse
+//
+// swagger:response jsonResponse
+
 // Get employee by id
 func (e *Employee) GetEmployeeById(w http.ResponseWriter, r *http.Request) {
 	// Covert id from str to int64
@@ -50,7 +65,6 @@ func (e *Employee) GetEmployeeById(w http.ResponseWriter, r *http.Request) {
 	}
 	res, err := e.repo.GetByID(r.Context(), id)
 	if err != nil {
-
 		respondWithError(w, http.StatusNotFound, "Not Found")
 		return
 	}
@@ -96,6 +110,14 @@ func fileUpload(r *http.Request) (string, error){
     tempFile.Write(fileBytes)
 	return tempFile.Name(), nil
 }
+
+// swagger:route POST /employee Employees createEmployee
+// Create new employee
+// responses:
+//   200: jsonResponse
+//
+// swagger:response jsonResponse
+
 // Create Employee
 func (e *Employee) CreateEmployee(w http.ResponseWriter, r *http.Request) {
 
@@ -104,6 +126,10 @@ func (e *Employee) CreateEmployee(w http.ResponseWriter, r *http.Request) {
 	req := models.Employee{}
 	req.Name =    r.FormValue("name")
 	req.Phone =     r.FormValue("phone")
+	req.Job =    r.FormValue("job")
+	req.Country =     r.FormValue("country")
+	req.City =    r.FormValue("city")
+	req.Postalcode, _ = strconv.ParseInt(r.FormValue("postalcode"),10,64)
 	if err == nil {
 		req.Picture =    file
 	}
@@ -119,6 +145,14 @@ func (e *Employee) CreateEmployee(w http.ResponseWriter, r *http.Request) {
 }
 
 // 
+
+
+// swagger:route PUT /employee/{id} Employees updateEmployee
+// Update Employee
+// responses:
+//   200: jsonResponse
+//
+// swagger:response jsonResponse
 
 // Update employee
 func (e *Employee) UpdateEmployee(w http.ResponseWriter, r *http.Request) {
@@ -144,6 +178,14 @@ func (e *Employee) UpdateEmployee(w http.ResponseWriter, r *http.Request) {
 	// On succes
 	respondwithJSON(w, http.StatusAccepted, res)
 }
+
+
+// swagger:route DELETE /employee/{id} Employees deleteEmployee
+// Delete employee
+// responses:
+//   200: jsonResponse
+//
+// swagger:response jsonResponse
 
 // Delete employee
 func (e *Employee) DeleteEmployee(w http.ResponseWriter, r *http.Request) {

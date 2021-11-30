@@ -19,6 +19,12 @@ func NewUserHandler(db *dbconfig.DB) *User {
 	}
 }
 
+// swagger:route POST /register Auth signup
+// signup to the api.
+// responses:
+//   200: jsonResponse
+
+// swagger:response jsonResponse
 func (u *User) RegisterUser(w http.ResponseWriter, r *http.Request) {
 	req := models.User{}
 	err := json.NewDecoder(r.Body).Decode(&req)
@@ -38,6 +44,13 @@ func (u *User) RegisterUser(w http.ResponseWriter, r *http.Request) {
 	// On succes
 	respondwithJSON(w, 200, res)
 }
+
+// swagger:route POST /login Auth signin
+// signin to the api.
+// responses:
+//   200: jsonResponse
+// 
+// swagger:response jsonResponse
 func (u *User) Singin(w http.ResponseWriter, r *http.Request) {
 	req := models.User{}
 	err := json.NewDecoder(r.Body).Decode(&req)
@@ -55,3 +68,4 @@ func (u *User) Singin(w http.ResponseWriter, r *http.Request) {
 	}
 	respondwithJSON(w, http.StatusOK, res)
 }
+
