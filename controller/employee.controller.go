@@ -25,6 +25,12 @@ func NewEmployeeHandler(db *dbconfig.DB) *Employee {
 	}
 }
 
+type TransactionBody struct {
+	SenderID int64 `json:"senderId"`
+	ReceiverID int64 `json:"receiverId"`
+	Amount float64 `json:"amount"`
+}
+
 // var views = tmp.Must(tmp.ParseGlob("views/*"))
 
 // swagger:route GET /employee Employees getEmployees
@@ -77,8 +83,10 @@ func (e *Employee) GetEmployeeById(w http.ResponseWriter, r *http.Request) {
 func fileUpload(r *http.Request) (string, error){
 	// Parse our multipart form, 10 << 20 specifies a maximum
     // upload of 10 MB files.
-	r.ParseMultipartForm(10 << 20)
-
+	err := r.ParseMultipartForm(10 << 20)
+	if err != nil {
+		return "", err
+	}
 
 	file, header, err := r.FormFile("picture")
 	if err != nil {
@@ -105,6 +113,7 @@ func fileUpload(r *http.Request) (string, error){
     fileBytes, err := ioutil.ReadAll(file)
     if err != nil {
         fmt.Println(err)
+		return "", err
     }
     // write this byte array to our temporary file
     tempFile.Write(fileBytes)
@@ -132,6 +141,8 @@ func (e *Employee) CreateEmployee(w http.ResponseWriter, r *http.Request) {
 	req.Postalcode, _ = strconv.ParseInt(r.FormValue("postalcode"),10,64)
 	if err == nil {
 		req.Picture =    file
+	} else{
+		fmt.Errorf(err.Error(),err)
 	}
 
 	res, err := e.repo.Create(r.Context(), &req)
@@ -147,7 +158,7 @@ func (e *Employee) CreateEmployee(w http.ResponseWriter, r *http.Request) {
 // 
 
 
-// swagger:route PUT /employee/{id} Employees updateEmployee
+// swagger:route PUT /employee/{id} Employees editEmployee
 // Update Employee
 // responses:
 //   200: jsonResponse
@@ -205,4 +216,28 @@ func (e *Employee) DeleteEmployee(w http.ResponseWriter, r *http.Request) {
 	}
 	// On succes
 	respondwithJSON(w, http.StatusOK, res)
+}
+
+// swagger:route PUT /transact Employees transaction
+// Transaction
+// responses:
+//   200: jsonResponse
+//
+// swagger:response jsonResponse
+
+// Transaction
+func (e *Employee) TransactMoney(w http.ResponseWriter, r *http.Request) {
+	req := TransactionBody{}
+	err := json.NewDecoder(r.Body).Decode(&req)
+	if err != nil {
+		respondWithError(w, http.StatusBadRequest, "Bad request")
+		return
+	}
+	err = e.repo.Trasaction(r.Context(), req.Amount, req.SenderID, req.ReceiverID);
+	if err !=nil {
+		respondWithError(w, http.StatusConflict, "Conflict")
+		return
+	}
+	// On succes
+	respondwithJSON(w, http.StatusOK, "Transaction success")
 }

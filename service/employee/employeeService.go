@@ -4,6 +4,7 @@ import (
 	"context"
 	"crud/models"
 	repo "crud/service"
+	transaction "crud/utils"
 	"database/sql"
 	"errors"
 )
@@ -40,6 +41,7 @@ func (m *empRepo) fetch(ctx context.Context, query string, args ...interface{}) 
 			&data.City,
 			&data.Postalcode,
 			&data.CreatedAt,
+			&data.Balance,
 		)
 		if err != nil {
 			return nil, err
@@ -60,6 +62,7 @@ func (m *empRepo) Fetch(ctx context.Context) ([]*models.Employee, error) {
 			,[city]
 			,[postalcode]
 			,[created_at]
+			,[balance]
 			 From [dbo].[employees]`
 
 	return m.fetch(ctx, query)
@@ -77,6 +80,7 @@ func (m *empRepo) GetByID(ctx context.Context, id int64) (*models.Employee, erro
 			,[city]
 			,[postalcode]
 			,[created_at]
+			,[balance]
 			From [dbo].[employees] where [id]=?`
 
 	rows, err := m.fetch(ctx, query, id)
@@ -103,13 +107,14 @@ func (m *empRepo) Create(ctx context.Context, p *models.Employee) (int64, error)
 		,[job]
 		,[country]
 		,[city]
-		,[postalcode])
-	VALUES (?,?,?,?,?,?,?)`
+		,[postalcode]
+		,[balance])
+	VALUES (?,?,?,?,?,?,?,?)`
 	stmt, err := m.Conn.PrepareContext(ctx, query)
 	if err != nil {
 		return -1, err
 	}
-	res, err := stmt.ExecContext(ctx, p.Name, p.Phone, p.Picture, p.Job, p.Country, p.City, p.Postalcode)
+	res, err := stmt.ExecContext(ctx, p.Name, p.Phone, p.Picture, p.Job, p.Country, p.City, p.Postalcode, p.Balance)
 	if err != nil {
 		return -1, err
 	}
@@ -156,4 +161,37 @@ func (m *empRepo) Delete(ctx context.Context, id int64) (int64, error) {
 		return 0, err
 	}
 	return res.RowsAffected()
+}
+
+// Money Transaction
+func (m *empRepo) Trasaction(ctx context.Context, amount float64, senderId int64, receiverId int64) (error) {
+	// Check if ids exists
+	_, err := m.GetByID(ctx, senderId)
+	if err != nil {
+		return errors.New("Sender doesnot exist with this id")
+	}
+	_, err = m.GetByID(ctx, receiverId)
+	if err != nil {
+		return errors.New("Receiver doesnot exist with this id")
+	}
+	// Start transaction
+	query1 := "UPDATE [dbo].[employees] SET [balance]=[balance]-? WHERE ([id]=? AND [balance] > ?)"
+	query2 := "UPDATE [dbo].[employees] SET [balance]=[balance]+? WHERE [id]=?"
+	return transaction.Transact(m.Conn, func (tx *sql.Tx) error {
+		// Decrement
+		res, err := tx.ExecContext(ctx ,query1 ,amount ,senderId, amount)
+		if err != nil {
+			return err
+		}
+		if r, err := res.RowsAffected(); r < 1 || err != nil {
+			println(err.Error())
+			return err
+		}
+		// Increment
+		if _, err := tx.ExecContext(ctx, query2,amount, receiverId); err != nil {
+			return err
+		}
+		return nil
+	})
+
 }

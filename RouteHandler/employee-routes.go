@@ -16,4 +16,5 @@ func HandleEmpRoutes(r *mux.Router, db *dbconfig.DB) {
 	r.HandleFunc("/employee/{id}", middlewares.IsAuthorized(empHandeler.GetEmployeeById)).Methods(http.MethodGet)
 	r.HandleFunc("/employee/{id}", middlewares.IsAuthorized(empHandeler.UpdateEmployee)).Methods(http.MethodPut)
 	r.HandleFunc("/employee/{id}",middlewares.IsAuthorized(empHandeler.DeleteEmployee)).Methods(http.MethodDelete)
+	r.HandleFunc("/transact", middlewares.IsAuthorized(empHandeler.TransactMoney)).Methods(http.MethodPut)
 }

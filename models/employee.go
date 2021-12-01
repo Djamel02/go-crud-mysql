@@ -13,4 +13,5 @@ type Employee struct {
 	City		string	`json:"city"`
 	Postalcode 	int64 `json:"postalcode"`
 	CreatedAt 	*time.Time `json:"created_at"`
+	Balance		float64 `json:"balance" sql:"type:money;"`
 }
