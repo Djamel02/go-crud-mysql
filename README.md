@@ -7,7 +7,8 @@ Simple RESTFull API for learning purposes, using Golang and MySql as Database wi
 ## Resources
 
 [Github repo to build RESTFull APIs with go](https://github.com/err-him/go-book-store-api) <br/>
-[Medium article about go-swagger](https://medium.com/@pedram.esmaeeli/generate-swagger-specification-from-go-source-code-648615f7b9d9)
+[Medium article about go-swagger](https://medium.com/@pedram.esmaeeli/generate-swagger-specification-from-go-source-code-648615f7b9d9) <br/>
+[Stackoverflow issue detecting Commit or Rollback in "database/sql" driver](https://stackoverflow.com/questions/16184238/database-sql-tx-detecting-commit-or-rollback)
 
 ## Dependecies
 
