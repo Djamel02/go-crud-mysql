@@ -42,6 +42,7 @@ type registerParams struct {
     //required: true
     Body struct {
         Username string `json:"username"`
+		//swagger:strfmt email
 		Email string 	`json:"email"`
 		Password string `json:"password"`
     }
@@ -58,6 +59,7 @@ type loginParams struct {
         Password string `json:"password"`
     }
 }
+
 
 // Body to pass employee form data
 // swagger:parameters createEmployee
@@ -80,6 +82,33 @@ type employeeParams struct {
 	//in: formData
 	Postalcode int64 `json:"postalcode"`
 	
+}
+
+// The body to pass to edit employee
+//swagger:parameters editEmployee
+type editEmployeeParams struct {
+    //in: body
+    //required: true
+    Body struct {
+        Name string `json:"name"`
+		Phone string 	`json:"phone"`
+		Job string `json:"job"`
+		Country string `json:"country"`
+		City string `json:"city"`
+		Postalcode int64 `json:"postalcode"`
+    }
+}
+
+// The body to pass transaction infos
+//swagger:parameters transaction
+type transactionParams struct {
+	//in: body
+	//required: true
+	Body struct {
+		SenderID int64 `json:"senderId"`
+		ReceiverID int64 `json:"receiverId"`
+		Amount float64 `json:"amount"`
+	}
 }
 
 // swagger:response jsonResponse
